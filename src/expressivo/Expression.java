@@ -68,7 +68,13 @@ public interface Expression {
         
         else if (tree.getName() == Grammar.ROOT || tree.getName() == Grammar.TOKEN || tree.getName() == Grammar.PRIMITIVE_1 || tree.getName() == Grammar.PRIMITIVE_2) {
             /* non-terminals with only one child */
-            return buildAST(tree.children().get(0));
+            for (ParseTree<Grammar> child: tree.children()) {
+                if (child.getName() != Grammar.WHITESPACE) 
+                    return buildAST(child);
+            }
+            
+            // should never reach here
+            throw new RuntimeException("error in parsing");
         }
         
         else if (tree.getName() == Grammar.SUM || tree.getName() == Grammar.PRODUCT) {

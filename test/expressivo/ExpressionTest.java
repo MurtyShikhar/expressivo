@@ -13,7 +13,8 @@ import org.junit.Test;
 public class ExpressionTest {
 
     // Testing strategy
-    //   TODO
+    // Check all equality functions
+    // for checking parsing, divide into multiSum, multiProd, sumofprods, prodOfsums and a complex parse
     
     @Test(expected=AssertionError.class)
     public void testAssertionsEnabled() {
@@ -73,13 +74,31 @@ public class ExpressionTest {
     	final Expression right = new MultiplyExpression(new Var("z"), new Var("w"));
         assertEquals(expression , new SumExpression(left, right));
     }
+    
+    @Test
+    public void sumProductTest2() {
+        final Expression expression = Expression.parse("(2*x    )+    (    y*x    )");
+        final Expression left = new MultiplyExpression(new Number(2), new Var("x"));
+        final Expression right = new MultiplyExpression(new Var("y"), new Var("x"));
+        assertEquals(expression , new SumExpression(left, right));
+    }
 
     @Test
     public void productTest() {
     	final Expression expression = Expression.parse("(x+y)*(w+z)");
-    	Expression leftOp  = new SumExpression(new Var("x"), new Var("y"));
-    	Expression rightOp = new SumExpression(new Var("w"), new Var("z"));
+    	final Expression leftOp  = new SumExpression(new Var("x"), new Var("y"));
+    	final Expression rightOp = new SumExpression(new Var("w"), new Var("z"));
     	assertEquals(expression , new MultiplyExpression(leftOp, rightOp));
+    }
+    
+    @Test
+    public void complexParseTest(){
+        final Expression expression = Expression.parse("4 + 3 * x + 2 * x * x + 1 * x * x * (((x)))");
+        final Expression subProd1 = new MultiplyExpression(new Number(3), new Var("x"));
+        final Expression subProd2 = new MultiplyExpression(new MultiplyExpression(new Number(2), new Var("x")), new Var("x"));
+        final Expression subProd3 = new MultiplyExpression(new MultiplyExpression(new MultiplyExpression(new Number(1), new Var("x")), new Var("x")), new Var("x"));
+        final Expression sumexpr = new SumExpression(new SumExpression(new SumExpression(new Number(4), subProd1), subProd2), subProd3);
+        assertEquals(sumexpr, expression);
     }
 
 }
