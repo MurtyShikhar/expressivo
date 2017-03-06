@@ -28,11 +28,11 @@ public class BinaryOp{
         return right;
     }
     
-    public boolean isEqual(Object that){
+    public boolean equals(Object that){
         if (that instanceof BinaryOp) {
             BinaryOp that_casted = (BinaryOp) that;
             if (that_casted.op == op)
-                return (that_casted.left == left) && (that_casted.right == right);
+                return (that_casted.left).equals(left) && (that_casted.right).equals(right);
             else return false;
         }
         

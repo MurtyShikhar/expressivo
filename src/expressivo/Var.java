@@ -22,7 +22,7 @@ public class Var implements Expression{
      * @return a string representation for this enclosed in parenthesis
      */
     public String toString() {
-        return '(' + var + ')';
+        return var;
     }
     
     
@@ -31,10 +31,10 @@ public class Var implements Expression{
      * @return Boolean indicating whether this is equal to that
      */
     
-    public boolean isEqual(Object that) {
+    public boolean equals(Object that) {
         if (that instanceof Var) {
             Var that_var = (Var) that;
-            return that_var.var == var;
+            return (that_var.var).equals(var);
         }
         
         else return false;

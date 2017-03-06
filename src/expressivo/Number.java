@@ -1,12 +1,12 @@
 package expressivo;
 
 public class Number implements Expression{
-    private final double number;
+    private final int number;
     /**
      * 
      * @param num: The number this contains
      */
-    public Number(double num) {
+    public Number(int num) {
         this.number = num;
     }
     
@@ -14,7 +14,7 @@ public class Number implements Expression{
      * 
      * @return the number that this contains
      */
-    public double getNum(){
+    public int getNum(){
         return number;
     }
     
@@ -22,7 +22,7 @@ public class Number implements Expression{
      * @return a string representation for this enclosed in parenthesis
      */
     public String toString() {
-        return '(' + Double.toString(number) + ')';
+        return Integer.toString(number);
     }
     
     /**
@@ -30,7 +30,7 @@ public class Number implements Expression{
      * @param that: Object to be check equality against
      * @return boolean indicating whether this == that
      */
-    public boolean isEqual(Object that) {
+    public boolean equals(Object that) {
         if (that instanceof Number) {
             Number that_number = (Number) that;
             return that_number.number == number;
