@@ -121,7 +121,7 @@ public class ExpressionTest {
     @Test
     public void ProductDerivativeCheck() {
         final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
-        final Expression left = new MultiplyExpression(new Var("x"), new SumExpression(new Var("x"), new Var("x")) );
+        final Expression left = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Number(2), new Var("x")) );
         final Expression right = new MultiplyExpression(new Var("x"), new Var("x"));
         assertEquals(new SumExpression(left, right), exp.differentiate(new Var("x")));
     }
@@ -159,7 +159,7 @@ public class ExpressionTest {
     public void ProductSumDerivativeCheck1() {
         final Expression exp = new MultiplyExpression(new SumExpression(new Var("x"), new Var("y")), new SumExpression(new Var("x"), new Var("y")));
         final Expression leftOp = new SumExpression(new Var("x"), new Var("y"));
-        assertEquals(exp.differentiate(new Var("x")), new SumExpression(leftOp, leftOp));
+        assertEquals(exp.differentiate(new Var("x")), new MultiplyExpression(new Number(2), leftOp));
     }
     
 
