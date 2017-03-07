@@ -38,4 +38,9 @@ public class Number implements Expression{
         
         else return false;
     }
+
+    /* da/dx = 0 if a is a constant */
+    public Expression differentiate(Var x) {
+        return new Number(0);    
+    } 
 }

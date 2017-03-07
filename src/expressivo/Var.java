@@ -39,4 +39,10 @@ public class Var implements Expression{
         
         else return false;
     }
+
+    /* du/dx = 1 if u == x else 0 */
+    public Expression differentiate(Var x) {
+        if (this.equals(x)) return new Number(1);
+        else return new Number(0);
+    }
 }

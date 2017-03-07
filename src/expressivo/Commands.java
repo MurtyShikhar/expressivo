@@ -21,7 +21,10 @@ public class Commands {
      * @throws IllegalArgumentException if the expression or variable is invalid
      */
     public static String differentiate(String expression, String variable) {
-        throw new RuntimeException("unimplemented");
+        final Expression expr = Expression.parse(expression);
+        final Var currvar = new Var(variable);
+        final Expression dexpr = expr.differentiate(currvar);
+        return dexpr.toString();
     }
     
     /**

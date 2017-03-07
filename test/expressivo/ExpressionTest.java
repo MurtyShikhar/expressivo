@@ -100,5 +100,67 @@ public class ExpressionTest {
         final Expression sumexpr = new SumExpression(new SumExpression(new SumExpression(new Number(4), subProd1), subProd2), subProd3);
         assertEquals(sumexpr, expression);
     }
+    
+    
+    /* Simple tests for checking derivatives */
+    
+    @Test
+    public void NumberDerivativeCheck() {
+        final Expression exp = new Number(2);
+        assertEquals(new Number(0), exp.differentiate(new Var("x")));
+    }
+    
+    @Test
+    public void VariableDerivativeCheck() {
+        final Expression exp = new Var("x");
+        assertEquals(new Number(1), exp.differentiate(new Var("x")));
+        assertEquals(new Number(0), exp.differentiate(new Var("y")));
+
+    }
+    
+    @Test
+    public void ProductDerivativeCheck() {
+        final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
+        final Expression left = new MultiplyExpression(new Var("x"), new SumExpression(new Var("x"), new Var("x")) );
+        final Expression right = new MultiplyExpression(new Var("x"), new Var("x"));
+        assertEquals(new SumExpression(left, right), exp.differentiate(new Var("x")));
+    }
+    
+    @Test
+    public void ProductDerivativeCheck2() {
+        final Expression exp = new MultiplyExpression(new Var("x"), new Var("y"));
+        final Expression ans = new Var("y");
+        assertEquals(ans, exp.differentiate(new Var("x")));
+    }
+   
+    @Test
+    public void ProductDerivativeCheck3() {
+        final Expression exp = new MultiplyExpression(new Var("y"), new Var("x"));
+        final Expression ans = new Var("y");
+        assertEquals(ans, exp.differentiate(new Var("x")));
+    }
+    
+    
+    @Test
+    public void ProductDerivativeCheck4() {
+        final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
+        assertEquals(exp.differentiate(new Var("y")), new Number(0));
+    }
+    
+    
+    @Test
+    public void SumDerivativeCheck() {
+        final Expression exp = new SumExpression(new Var("x"), new Number(1));
+        assertEquals(exp.differentiate(new Var("x")), new Number(1));
+    }
+    
+    
+    @Test
+    public void ProductSumDerivativeCheck1() {
+        final Expression exp = new MultiplyExpression(new SumExpression(new Var("x"), new Var("y")), new SumExpression(new Var("x"), new Var("y")));
+        final Expression leftOp = new SumExpression(new Var("x"), new Var("y"));
+        assertEquals(exp.differentiate(new Var("x")), new SumExpression(leftOp, leftOp));
+    }
+    
 
 }

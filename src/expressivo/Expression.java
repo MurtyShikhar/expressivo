@@ -51,8 +51,8 @@ public interface Expression {
     }
     
     /**
-     * 
-     * @param tree: the CST tree to be parsed into an Expression (AST)
+     * This function is a DFS on the concrete syntax tree (CST)
+     * @param tree: the CST to be parsed into an Expression (AST)
      * @return the AST corresponding to this tree
      */
     public static Expression buildAST(ParseTree<Grammar> tree) {
@@ -98,7 +98,6 @@ public interface Expression {
         try {
             Parser<Grammar> parser = GrammarCompiler.compile(new File("/Users/apple/Documents/workspace/ps1-expressivo/src/expressivo/Expression.g"), Grammar.ROOT);
             ParseTree<Grammar> tree = parser.parse(input);
-            tree.displayToFile("file_" + input);
             return buildAST(tree);
             
         }
@@ -115,6 +114,14 @@ public interface Expression {
             return null;
         }
     }
+    
+
+    /**
+     * @param x: Var object to be differentiated with respect to
+     * @return derivative of this wrt x
+     */
+    
+    public Expression differentiate(Var x);
     
     /**
      * @return a parsable representation of this expression, such that
@@ -139,7 +146,6 @@ public interface Expression {
     @Override
     public int hashCode();
     
-    // TODO more instance methods
     
     /* Copyright (c) 2015-2017 MIT 6.005 course staff, all rights reserved.
      * Redistribution of original or derived work requires permission of course staff.
