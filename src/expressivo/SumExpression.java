@@ -1,5 +1,7 @@
 package expressivo;
 
+import org.hamcrest.core.IsInstanceOf;
+
 public class SumExpression extends BinaryOp implements Expression{
 
     public SumExpression(Expression leftOp, Expression rightOp) {
@@ -11,6 +13,7 @@ public class SumExpression extends BinaryOp implements Expression{
      * @returns an Expression formed using the following rules
      * a+b = a if b = 0 || a+b = b if a = 0
      * a+b = 2*a if a = b
+     * also simplifies a*x + b*x as (a+b)*x if a and b are both numbers
      * */
     public static Expression createSum(Expression leftOp, Expression rightOp) {
     	boolean isNumLeft = leftOp instanceof Number;
@@ -32,7 +35,9 @@ public class SumExpression extends BinaryOp implements Expression{
     	        if (RightOfLeft.equals(RightofRight)) {
     	            final Expression leftOfLeft =  ((MultiplyExpression) leftOp).getLeft();
     	            final Expression leftOfRight =  ((MultiplyExpression) rightOp).getLeft();
-    	            return MultiplyExpression.createProduct(createSum(leftOfLeft, leftOfRight), RightOfLeft);
+    	            if (leftOfLeft instanceof Number && leftOfRight instanceof Number)
+    	                return MultiplyExpression.createProduct(createSum(leftOfLeft, leftOfRight), RightOfLeft);
+    	            else return new SumExpression(leftOp, rightOp);
     	        }
     	        
     	        else return new SumExpression(leftOp, rightOp);

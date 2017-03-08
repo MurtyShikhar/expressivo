@@ -22,7 +22,9 @@ public class MultiplyExpression extends BinaryOp implements Expression{
     	
     	if (isNumLeft) {
             int leftNum  = ((Number) leftOp).getNum();
-            if (isNumRight) {
+            if (leftOp.equals(zero)) return zero;
+            else if (leftOp.equals(one)) return rightOp;
+            else if (isNumRight) {
                 int rightNum = ((Number) rightOp).getNum();
                 return new Number(leftNum*rightNum);
             }
@@ -33,13 +35,26 @@ public class MultiplyExpression extends BinaryOp implements Expression{
     	            int leftOfRightNum = ((Number) leftOfRightOp).getNum();
     	            return createProduct(new Number(leftNum*leftOfRightNum), rigtOfRightOp);
     	        }
+    	        
+    	        else return new MultiplyExpression(leftOp, rightOp);
     	    }
+            
+            else return new MultiplyExpression(leftOp, rightOp);
     	   
     	}
     	
+    	else if (rightOp instanceof MultiplyExpression) {
+    	     final Expression leftOfRightOp = ((MultiplyExpression) rightOp).getLeft();
+             final Expression rigtOfRightOp = ((MultiplyExpression) rightOp).getRight();
+             if (leftOfRightOp instanceof Number) {
+                 return createProduct(leftOfRightOp, createProduct(leftOp, rigtOfRightOp));
+             }
+             
+             else return new MultiplyExpression(leftOp, rightOp);
+    	}
+    	
 
-    	if (leftOp.equals(zero) || rightOp.equals(zero)) return zero;
-    	else if (leftOp.equals(one)) return rightOp;
+    	else if (rightOp.equals(zero)) return zero;
     	else if (rightOp.equals(one)) return leftOp;
     
     	else if (isNumRight) return new MultiplyExpression(rightOp, leftOp);
