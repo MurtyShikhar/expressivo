@@ -1,5 +1,7 @@
 package expressivo;
 
+import java.util.Map;
+
 public class Var implements Expression{
     private final String var;
     /**
@@ -45,4 +47,15 @@ public class Var implements Expression{
         if (this.equals(x)) return new Number(1);
         else return new Number(0);
     }
+    
+    public Expression simplify(Map<String, Double> env) {
+      if (env.containsKey(var)) {
+          int val = env.get(var).intValue();
+          return new Number(val);
+      }
+      
+      else return this;
+      
+    }
+
 }

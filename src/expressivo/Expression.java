@@ -2,6 +2,7 @@ package expressivo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import lib6005.parser.*;
 
 /**
@@ -23,6 +24,12 @@ public interface Expression {
     // + Multiply(leftOp: Expression, rightOp: Expression)
     enum Grammar {ROOT, SUM, PRODUCT, TOKEN, PRIMITIVE_1, PRIMITIVE_2, NUMBER, WHITESPACE, VARIABLE};
 
+    public static Expression create(Expression leftExpr, Expression rightExpr, char op) {
+        if  (op == '+')
+            return SumExpression.createSum(leftExpr, rightExpr);
+        else
+            return MultiplyExpression.createProduct(leftExpr, rightExpr);
+    }
     public static Expression accumulator(ParseTree<Grammar> tree, Grammar grammarObj) {
         Expression expr = null;
         boolean first = true;
@@ -40,9 +47,9 @@ public interface Expression {
             else if (child.getName() == Grammar.WHITESPACE) continue;
             else {
                 if (grammarObj == Grammar.SUM)
-                    expr = new SumExpression(expr, buildAST(child));
+                    expr = SumExpression.createSum(expr, buildAST(child));
                 else
-                    expr = new MultiplyExpression(expr, buildAST(child));
+                    expr = MultiplyExpression.createProduct(expr, buildAST(child));
             }
         }
         
@@ -122,6 +129,16 @@ public interface Expression {
      */
     
     public Expression differentiate(Var x);
+    
+    
+    /**
+     * @param env: Map<String, double> mapping variables to values: 
+     * Keys (must be non-empty, case-sensitive) in env will be used to create Var objects. 
+     * 
+     * @return expr: Expression obtained by substituting each var in this (such that it has a mapping in env) and simplifying. 
+     */
+    
+    public Expression simplify(Map<String, Double> env);
     
     /**
      * @return a parsable representation of this expression, such that

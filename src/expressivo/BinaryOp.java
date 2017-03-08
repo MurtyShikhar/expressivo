@@ -1,5 +1,7 @@
 package expressivo;
 
+import java.util.Map;
+
 public class BinaryOp{
     private final Expression left;
     private final Expression right;
@@ -37,6 +39,12 @@ public class BinaryOp{
         }
         
         else return false;
+    }
+    
+    public Expression simplify(Map<String, Double> env) {
+        final Expression simplifiedLeftExpr = getLeft().simplify(env);
+        final Expression simplifiedRightExpr = getRight().simplify(env);
+        return Expression.create(simplifiedLeftExpr, simplifiedRightExpr, op);
     }
     
     public String toString() {

@@ -4,7 +4,7 @@
 package expressivo;
 
 import static org.junit.Assert.*;
-
+import java.util.*;
 import org.junit.Test;
 
 /**
@@ -96,7 +96,7 @@ public class ExpressionTest {
         final Expression expression = Expression.parse("4 + 3 * x + 2 * x * x + 1 * x * x * (((x)))");
         final Expression subProd1 = new MultiplyExpression(new Number(3), new Var("x"));
         final Expression subProd2 = new MultiplyExpression(new MultiplyExpression(new Number(2), new Var("x")), new Var("x"));
-        final Expression subProd3 = new MultiplyExpression(new MultiplyExpression(new MultiplyExpression(new Number(1), new Var("x")), new Var("x")), new Var("x"));
+        final Expression subProd3 = new MultiplyExpression(new MultiplyExpression(new Var("x"), new Var("x")), new Var("x"));
         final Expression sumexpr = new SumExpression(new SumExpression(new SumExpression(new Number(4), subProd1), subProd2), subProd3);
         assertEquals(sumexpr, expression);
     }
@@ -162,5 +162,63 @@ public class ExpressionTest {
         assertEquals(exp.differentiate(new Var("x")), new MultiplyExpression(new Number(2), leftOp));
     }
     
+    /* Simple tests for checking Simplify() */
+    
+    /* check case-sensitivity */
+    @Test
+    public void VarSimplify() {
+        final Expression exp = new Var("x");
+        Map<String, Double> env = new HashMap<>();
+        env.put("X", 4.0);
+        assertEquals(exp.simplify((env)), exp);
+    }
+    
+    @Test
+    public void SumSimplify() {
+        final Expression exp = new SumExpression(new Var("x"), new MultiplyExpression(new Var("y"), new Var("y")));
+        Map<String, Double> env = new HashMap<>();
+        env.put("x", 4.0); 
+        env.put("y", 3.0);
+        assertEquals(exp.simplify(env), new Number(13));
+    }
+    
+    @Test
+    public void SumSimplify2() {
+        final Expression exp = new SumExpression(new Var("x"), new MultiplyExpression(new Var("y"), new Var("z")));
+        Map<String, Double> env = new HashMap<>();
+        env.put("y", 2.0); 
+        env.put("z", 5.0);
+        assertEquals(exp.simplify(env), new SumExpression(new Var("x"), new Number(10)));
+    }
+    
+    @Test
+    public void Simplify3() {
+        final Expression exp = new SumExpression(new Number(3), new Number(4));
+        assertEquals(exp.simplify(new HashMap<String, Double>()), new Number(7));
+    }
+    
+    
+    @Test
+    public void Simplify4() {
+        final Expression exp = new MultiplyExpression(new Number(3), new Number(4));
+        assertEquals(exp.simplify(new HashMap<String,Double>()), new Number(12));
+    }
+    
+    @Test
+    public void ProductSimplify() {
+        final Expression exp = new MultiplyExpression(new Var("x"),new MultiplyExpression(new Var("y"), new Var("z")));
+        Map<String, Double> env = new HashMap<>();
+        env.put("x", 4.0); 
+        env.put("y", 3.0);
+        env.put("z", 2.0);
+        assertEquals(exp.simplify(env), new Number(24));
+    }
 
+    @Test
+    public void ComplexSimplify1() {
+        final Expression exp = new SumExpression(new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("y"))), new MultiplyExpression(new Var("y"), new SumExpression(new Number(1), new Var("x"))));
+        Map<String, Double> env = new HashMap<>();
+        env.put("x", 2.0);
+        assertEquals(exp.simplify(env), new MultiplyExpression(new Number(7), new Var("y")));
+    }
 }

@@ -7,7 +7,11 @@ public class SumExpression extends BinaryOp implements Expression{
         // TODO Auto-generated constructor stub
     }
 
-    /* factory method for generating expressions */
+    /* factory method for generating expressions 
+     * @returns an Expression formed using the following rules
+     * a+b = a if b = 0 || a+b = b if a = 0
+     * a+b = 2*a if a = b
+     * */
     public static Expression createSum(Expression leftOp, Expression rightOp) {
     	boolean isNumLeft = leftOp instanceof Number;
     	boolean isNumRight = rightOp instanceof Number;
@@ -21,7 +25,20 @@ public class SumExpression extends BinaryOp implements Expression{
     	else if (leftOp.equals(zero)) return rightOp;
     	else if (rightOp.equals(zero)) return leftOp;
     	else if (leftOp.equals(rightOp)) return new MultiplyExpression(new Number(2), leftOp);
-    	else return new SumExpression(leftOp, rightOp);
+    	else{
+    	    if (leftOp instanceof MultiplyExpression && rightOp instanceof MultiplyExpression) {
+    	        final Expression RightOfLeft = ((MultiplyExpression) leftOp).getRight();
+    	        final Expression RightofRight =  ((MultiplyExpression) rightOp).getRight();
+    	        if (RightOfLeft.equals(RightofRight)) {
+    	            final Expression leftOfLeft =  ((MultiplyExpression) leftOp).getLeft();
+    	            final Expression leftOfRight =  ((MultiplyExpression) rightOp).getLeft();
+    	            return MultiplyExpression.createProduct(createSum(leftOfLeft, leftOfRight), RightOfLeft);
+    	        }
+    	        
+    	        else return new SumExpression(leftOp, rightOp);
+    	    }
+    	    else return new SumExpression(leftOp, rightOp);
+    	}
     }
 
 	/* d(u+v)/dx = du/dx + dv/dx */	
