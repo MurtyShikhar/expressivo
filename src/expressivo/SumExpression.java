@@ -1,6 +1,5 @@
 package expressivo;
 
-import org.hamcrest.core.IsInstanceOf;
 
 public class SumExpression extends BinaryOp implements Expression{
 
@@ -27,21 +26,37 @@ public class SumExpression extends BinaryOp implements Expression{
     	}
     	else if (leftOp.equals(zero)) return rightOp;
     	else if (rightOp.equals(zero)) return leftOp;
-    	else if (leftOp.equals(rightOp)) return new MultiplyExpression(new Number(2), leftOp);
+    	else if (leftOp.equals(rightOp)) return MultiplyExpression.createProduct(new Number(2), leftOp);
     	else{
-    	    if (leftOp instanceof MultiplyExpression && rightOp instanceof MultiplyExpression) {
-    	        final Expression RightOfLeft = ((MultiplyExpression) leftOp).getRight();
-    	        final Expression RightofRight =  ((MultiplyExpression) rightOp).getRight();
-    	        if (RightOfLeft.equals(RightofRight)) {
-    	            final Expression leftOfLeft =  ((MultiplyExpression) leftOp).getLeft();
-    	            final Expression leftOfRight =  ((MultiplyExpression) rightOp).getLeft();
-    	            if (leftOfLeft instanceof Number && leftOfRight instanceof Number)
-    	                return MultiplyExpression.createProduct(createSum(leftOfLeft, leftOfRight), RightOfLeft);
-    	            else return new SumExpression(leftOp, rightOp);
-    	        }
-    	        
-    	        else return new SumExpression(leftOp, rightOp);
+    	    
+    	    boolean isLeftProduct = leftOp instanceof MultiplyExpression;
+    	    boolean isRightProduct = rightOp instanceof MultiplyExpression;
+    	    
+    	    if (isLeftProduct || isRightProduct) {
+    	        final Expression RightOfLeft = isLeftProduct ? ((MultiplyExpression) leftOp).getRight() : leftOp;
+                final Expression RightofRight =  isRightProduct? ((MultiplyExpression) rightOp).getRight(): rightOp;
+                final Expression leftOfLeft =  isLeftProduct? ((MultiplyExpression) leftOp).getLeft() : new Number(1);
+                final Expression leftOfRight =  isRightProduct? ((MultiplyExpression) rightOp).getLeft() : new Number(1);
+
+                
+                if (RightOfLeft.equals(RightofRight)) {
+                    if (leftOfLeft instanceof Number && leftOfRight instanceof Number)
+                        return MultiplyExpression.createProduct(createSum(leftOfLeft, leftOfRight), RightOfLeft);
+                    
+                    else return new SumExpression(leftOp, rightOp);
+                }
+                
+                else if (RightOfLeft.equals(rightOp) && leftOfLeft instanceof Number) return MultiplyExpression.createProduct(createSum(leftOfLeft, new Number(1)), rightOp);
+                
+                
+                else if (RightofRight.equals(leftOp) && leftOfRight instanceof Number) return MultiplyExpression.createProduct(createSum(leftOfRight, new Number(1)), leftOp);
+                
+                else return new SumExpression(leftOp, rightOp);
+
     	    }
+    	    
+    	    
+    	    
     	    else return new SumExpression(leftOp, rightOp);
     	}
     }
