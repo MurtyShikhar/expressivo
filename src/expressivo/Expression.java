@@ -51,9 +51,9 @@ public interface Expression {
             else if (child.getName() == Grammar.WHITESPACE) continue;
             else {
                 if (grammarObj == Grammar.SUM)
-                    expr = SumExpression.createSum(buildAST(child), expr);
+                    expr = new SumExpression(buildAST(child), expr);
                 else
-                    expr = MultiplyExpression.createProduct(buildAST(child), expr);
+                    expr = new MultiplyExpression(buildAST(child), expr);
             }
         }
         
@@ -90,7 +90,7 @@ public interface Expression {
             }
             
             // should never reach here
-            throw new RuntimeException("error in parsing");
+            throw new IllegalArgumentException("error in parsing");
         }
         
         else if (tree.getName() == Grammar.SUM || tree.getName() == Grammar.PRODUCT) {
@@ -99,7 +99,7 @@ public interface Expression {
          }
         
         else {
-            throw new RuntimeException("error in input: should never reach here");
+            throw new IllegalArgumentException("error in input: should never reach here");
         }
        
     }
@@ -117,14 +117,13 @@ public interface Expression {
             return buildAST(tree);
             
         }
+        
         catch (UnableToParseException e) {
             System.out.println("cannot parse the grammar");
-            e.printStackTrace();
             return null;
         }
         catch (IOException e) {
             System.out.println("cannot open file Expression.g");
-            e.printStackTrace();
             return null;
         }
     }

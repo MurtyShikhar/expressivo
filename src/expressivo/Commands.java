@@ -22,6 +22,7 @@ public class Commands {
      */
     public static String differentiate(String expression, String variable) {
         final Expression expr = Expression.parse(expression);
+        if (expr == null) throw new IllegalArgumentException("Illegal expression. Cannot parse");
         final Var currvar = new Var(variable);
         final Expression dexpr = expr.differentiate(currvar);
         return dexpr.toString();
@@ -40,8 +41,10 @@ public class Commands {
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static String simplify(String expression, Map<String,Double> environment) {
-        final Expression exp = Expression.parse(expression).simplify(environment);
-        return exp.toString();
+        final Expression expr = Expression.parse(expression);
+        if (expr == null) throw new IllegalArgumentException("Illegal expression. Cannot parse");
+        final Expression simplifiedExpr = expr.simplify(environment);
+        return simplifiedExpr.toString();
     }
     
     /* Copyright (c) 2015-2017 MIT 6.005 course staff, all rights reserved.

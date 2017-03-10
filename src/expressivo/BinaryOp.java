@@ -55,7 +55,6 @@ public class BinaryOp{
         }
     }
     
-    @Override
     public Expression simplify(Map<String, Double> env) {
         final Expression simplifiedLeftExpr = getLeft().simplify(env);
         final Expression simplifiedRightExpr = getRight().simplify(env);

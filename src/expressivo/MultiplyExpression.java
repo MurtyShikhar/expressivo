@@ -70,6 +70,6 @@ public class MultiplyExpression extends BinaryOp implements Expression{
         final Expression leftDeriv = left.differentiate(x);
         final Expression rightDeriv = right.differentiate(x);
                
-        return SumExpression.createSum(createProduct(left, rightDeriv), createProduct(right, leftDeriv));	
+        return new SumExpression(new MultiplyExpression(left, rightDeriv), new MultiplyExpression(right, leftDeriv));	
 	} 
 }

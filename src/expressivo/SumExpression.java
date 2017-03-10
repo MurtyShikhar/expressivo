@@ -67,6 +67,6 @@ public class SumExpression extends BinaryOp implements Expression{
 	    final Expression leftDeriv = left.differentiate(x);
 	    final Expression rightDeriv = right.differentiate(x);
 	    
-	    return createSum(leftDeriv, rightDeriv);	
+	    return new SumExpression(leftDeriv, rightDeriv);	
 	} 
 }
