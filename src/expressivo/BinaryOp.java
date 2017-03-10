@@ -30,6 +30,7 @@ public class BinaryOp{
         return right;
     }
     
+    @Override
     public boolean equals(Object that){
         if (that instanceof BinaryOp) {
             BinaryOp that_casted = (BinaryOp) that;
@@ -40,13 +41,28 @@ public class BinaryOp{
         
         else return false;
     }
+
+    @Override
+    public int hashCode() {
+        int leftcode = left.hashCode();
+        int rightcode = right.hashCode();
+        if (op == '*') {
+            return (leftcode*23) + rightcode;
+        }
+
+        else {
+            return (leftcode*17) + rightcode;
+        }
+    }
     
+    @Override
     public Expression simplify(Map<String, Double> env) {
         final Expression simplifiedLeftExpr = getLeft().simplify(env);
         final Expression simplifiedRightExpr = getRight().simplify(env);
         return Expression.create(simplifiedLeftExpr, simplifiedRightExpr, op);
     }
     
+    @Override
     public String toString() {
         return '(' + left.toString() + ')' + op + '(' + right.toString() + ')';
     }

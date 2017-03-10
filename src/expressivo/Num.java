@@ -66,15 +66,23 @@ public class Num implements Expression{
     /**
      * @return a string representation for this enclosed in parenthesis
      */
+    @Override
     public String toString() {
          return number.toString();
     }
     
+    
+    @Override
+    public int hashCode() {
+        return number.hashCode();
+    }
     /**
      * 
      * @param that: Object to be check equality against
      * @return boolean indicating whether this == that
      */
+
+    @Override
     public boolean equals(Object that) {
         if (that instanceof Num) {
             Num that_number = (Num) that;
@@ -85,10 +93,12 @@ public class Num implements Expression{
     }
 
     /* da/dx = 0 if a is a constant */
+    @Override
     public Expression differentiate(Var x) {
         return zero();    
     } 
     
+    @Override
     public Expression simplify(Map<String, Double> env) {
         return this;
     }

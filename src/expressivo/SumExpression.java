@@ -58,6 +58,7 @@ public class SumExpression extends BinaryOp implements Expression{
     	    else return new SumExpression(leftOp, rightOp);
     	}
     }
+    
 
 	/* d(u+v)/dx = du/dx + dv/dx */	
 	public Expression differentiate(Var x) {

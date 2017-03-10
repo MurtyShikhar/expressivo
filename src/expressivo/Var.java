@@ -23,6 +23,8 @@ public class Var implements Expression{
     /**
      * @return a string representation for this enclosed in parenthesis
      */
+
+    @Override
     public String toString() {
         return var;
     }
@@ -33,6 +35,7 @@ public class Var implements Expression{
      * @return Boolean indicating whether this is equal to that
      */
     
+    @Override
     public boolean equals(Object that) {
         if (that instanceof Var) {
             Var that_var = (Var) that;
@@ -41,13 +44,20 @@ public class Var implements Expression{
         
         else return false;
     }
+    
+    @Override
+    public int hashCode() {
+        return var.hashCode();
+    }
 
     /* du/dx = 1 if u == x else 0 */
+    @Override
     public Expression differentiate(Var x) {
         if (this.equals(x)) return Num.one();
         else return Num.zero();
     }
     
+    @Override
     public Expression simplify(Map<String, Double> env) {
       if (env.containsKey(var)) {
           double val = env.get(var);
