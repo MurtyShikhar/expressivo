@@ -98,7 +98,7 @@ public class ExpressionTest {
         final Expression subProd2 = new MultiplyExpression(new Num(2), new MultiplyExpression(new Var("x"), new Var("x")));
         final Expression subProd3 = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
         final Expression sumexpr = new SumExpression(new Num(4), new SumExpression(subProd1, new SumExpression(subProd2, subProd3)));
-        assertEquals(sumexpr, expression);
+        assertEquals(sumexpr, expression.simplify(new HashMap<>()));
     }
     
     
@@ -122,35 +122,35 @@ public class ExpressionTest {
     public void ProductDerivativeCheck() {
         final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
         final Expression coeff = new MultiplyExpression(new Var("x"), new Var("x"));
-        assertEquals(new MultiplyExpression(new Num(3), coeff), exp.differentiate(new Var("x")));
+        assertEquals(new MultiplyExpression(new Num(3), coeff), exp.differentiate(new Var("x")).simplify(new HashMap<>()));
     }
     
     @Test
     public void ProductDerivativeCheck2() {
         final Expression exp = new MultiplyExpression(new Var("x"), new Var("y"));
         final Expression ans = new Var("y");
-        assertEquals(ans, exp.differentiate(new Var("x")));
+        assertEquals(ans, exp.differentiate(new Var("x")).simplify(new HashMap<>()));
     }
    
     @Test
     public void ProductDerivativeCheck3() {
         final Expression exp = new MultiplyExpression(new Var("y"), new Var("x"));
         final Expression ans = new Var("y");
-        assertEquals(ans, exp.differentiate(new Var("x")));
+        assertEquals(ans, exp.differentiate(new Var("x")).simplify(new HashMap<>()));
     }
     
     
     @Test
     public void ProductDerivativeCheck4() {
         final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
-        assertEquals(exp.differentiate(new Var("y")), new Num(0));
+        assertEquals(exp.differentiate(new Var("y")).simplify(new HashMap<>()), new Num(0));
     }
     
     
     @Test
     public void SumDerivativeCheck() {
         final Expression exp = new SumExpression(new Var("x"), new Num(1));
-        assertEquals(exp.differentiate(new Var("x")), new Num(1));
+        assertEquals(exp.differentiate(new Var("x")),  new SumExpression(new Num(1), new Num(0)));
     }
     
     
@@ -158,7 +158,7 @@ public class ExpressionTest {
     public void ProductSumDerivativeCheck1() {
         final Expression exp = new MultiplyExpression(new SumExpression(new Var("x"), new Var("y")), new SumExpression(new Var("x"), new Var("y")));
         final Expression leftOp = new SumExpression(new Var("x"), new Var("y"));
-        assertEquals(exp.differentiate(new Var("x")), new MultiplyExpression(new Num(2), leftOp));
+        assertEquals(exp.differentiate(new Var("x")).simplify(new HashMap<>()), new MultiplyExpression(new Num(2), leftOp));
     }
     
     /* Simple tests for checking Simplify() */

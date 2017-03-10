@@ -119,8 +119,7 @@ public interface Expression {
         }
         
         catch (UnableToParseException e) {
-            System.out.println("cannot parse the grammar");
-            return null;
+            throw new IllegalArgumentException("Cannot parse the expression.");
         }
         catch (IOException e) {
             System.out.println("cannot open file Expression.g");

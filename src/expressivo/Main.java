@@ -49,7 +49,6 @@ public class Main {
                     // ... but don't change currentExpression
                 } else {
                     final Expression expression = Expression.parse(input);
-                    if (expression == null) throw new IllegalArgumentException("Illegal expression. Cannot parse.");
                     output = expression.toString();
                     currentExpression = Optional.of(output);
                 }
