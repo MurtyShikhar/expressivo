@@ -2,6 +2,7 @@ package expressivo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import lib6005.parser.*;
 
@@ -22,7 +23,7 @@ public interface Expression {
     // Expression = Number(num: double) + Var(var: [A-Za-z]+) 
     // + Add(leftOp: Expression, rightOp: Expression) 
     // + Multiply(leftOp: Expression, rightOp: Expression)
-    enum Grammar {ROOT, SUM, PRODUCT, TOKEN, PRIMITIVE_1, PRIMITIVE_2, NUMBER, WHITESPACE, VARIABLE};
+    enum Grammar {ROOT, SUM, PRODUCT, TOKEN, PRIMITIVE_1, PRIMITIVE_2, NUMBER, INT, DECIMAL, WHITESPACE, VARIABLE};
 
     public static Expression create(Expression leftExpr, Expression rightExpr, char op) {
         if  (op == '+')
@@ -33,8 +34,11 @@ public interface Expression {
     public static Expression accumulator(ParseTree<Grammar> tree, Grammar grammarObj) {
         Expression expr = null;
         boolean first = true;
-        for (ParseTree<Grammar> child: tree.children()) {
+        List<ParseTree<Grammar>> children = tree.children();
+        int len = children.size();
+        for (int i = len-1; i >= 0; i--) {
             /* the first child */
+            ParseTree<Grammar> child = children.get(i);
             if (first) {
                 expr = buildAST(child);
                 first = false;
@@ -47,9 +51,9 @@ public interface Expression {
             else if (child.getName() == Grammar.WHITESPACE) continue;
             else {
                 if (grammarObj == Grammar.SUM)
-                    expr = SumExpression.createSum(expr, buildAST(child));
+                    expr = SumExpression.createSum(buildAST(child), expr);
                 else
-                    expr = MultiplyExpression.createProduct(expr, buildAST(child));
+                    expr = MultiplyExpression.createProduct(buildAST(child), expr);
             }
         }
         
@@ -63,9 +67,14 @@ public interface Expression {
      * @return the AST corresponding to this tree
      */
     public static Expression buildAST(ParseTree<Grammar> tree) {
-        if (tree.getName() == Grammar.NUMBER) {
-            /* reached a terminal */
-            return new Number(Integer.parseInt(tree.getContents()));            
+        if (tree.getName() == Grammar.DECIMAL) {
+            /* reached a double terminal */
+            return new Num(Double.parseDouble(tree.getContents()));            
+        }
+
+        else if (tree.getName() == Grammar.INT) {
+            /* reached an int terminal */
+            return new Num(Integer.parseInt(tree.getContents()));
         }
         
         else if (tree.getName() == Grammar.VARIABLE) {
@@ -73,7 +82,7 @@ public interface Expression {
             return new Var(tree.getContents());
         }
         
-        else if (tree.getName() == Grammar.ROOT || tree.getName() == Grammar.TOKEN || tree.getName() == Grammar.PRIMITIVE_1 || tree.getName() == Grammar.PRIMITIVE_2) {
+        else if (tree.getName() == Grammar.ROOT || tree.getName() == Grammar.TOKEN || tree.getName() == Grammar.PRIMITIVE_1 || tree.getName() == Grammar.PRIMITIVE_2 || tree.getName() == Grammar.NUMBER) {
             /* non-terminals with only one child */
             for (ParseTree<Grammar> child: tree.children()) {
                 if (child.getName() != Grammar.WHITESPACE) 
@@ -98,7 +107,7 @@ public interface Expression {
     /**
      * Parse an expression.
      * @param input expression to parse, as defined in the PS1 handout.
-     * @return expression AST for the input
+     * @return expression AST for the input , Note that the expression is parsed from right to left: x*x*x => (x*(x*x)) & x+y+z => (x+(y+z))
      * @throws IllegalArgumentException if the expression is invalid
      */
     public static Expression parse(String input) {
@@ -109,13 +118,11 @@ public interface Expression {
             
         }
         catch (UnableToParseException e) {
-            // TODO Auto-generated catch block
             System.out.println("cannot parse the grammar");
             e.printStackTrace();
             return null;
         }
         catch (IOException e) {
-            // TODO Auto-generated catch block
             System.out.println("cannot open file Expression.g");
             e.printStackTrace();
             return null;

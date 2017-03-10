@@ -19,6 +19,8 @@ root ::= product | sum;
 	primitive_1 ::= token | product | '(' product ')';
 	primitive_2 ::= token | '(' sum ')';
 }
-number ::= [0-9]+;
+number ::= int | decimal;
+int ::= [0-9]+;
+decimal ::= [0-9]* '.' [0-9]+;
 variable ::= [A-Za-z]+;
 whitespace ::= [ ]+;

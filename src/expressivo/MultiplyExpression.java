@@ -9,31 +9,28 @@ public class MultiplyExpression extends BinaryOp implements Expression{
     
 
     /* factory method for generating expressions 
-     * @returns: An Expression formed using the following rules
+     * @returns: An Expression formed using the following rules:
      * 1: a*b = 0 if either a or b is 0
      * 2: a*b = a if b = 1 || a*b = b if a = 1
      * 3: the Number always comes first.
      * */
     public static Expression createProduct(Expression leftOp, Expression rightOp) {
-    	boolean isNumLeft = leftOp instanceof Number;
-    	boolean isNumRight = rightOp instanceof Number;
-    	final Expression one = new Number(1);
-    	final Expression zero = new Number(0);
+    	boolean isNumLeft = leftOp instanceof Num;
+    	boolean isNumRight = rightOp instanceof Num;
+    	final Expression one = Num.one();
+    	final Expression zero = Num.zero();
     	
     	if (isNumLeft) {
-            int leftNum  = ((Number) leftOp).getNum();
             if (leftOp.equals(zero)) return zero;
             else if (leftOp.equals(one)) return rightOp;
             else if (isNumRight) {
-                int rightNum = ((Number) rightOp).getNum();
-                return new Number(leftNum*rightNum);
-            }
+                return Num.product((Num)leftOp, (Num)rightOp);
+           }
             else if (rightOp instanceof MultiplyExpression) {
     	        final Expression leftOfRightOp = ((MultiplyExpression) rightOp).getLeft();
     	        final Expression rigtOfRightOp = ((MultiplyExpression) rightOp).getRight();
-    	        if (leftOfRightOp instanceof Number) {
-    	            int leftOfRightNum = ((Number) leftOfRightOp).getNum();
-    	            return createProduct(new Number(leftNum*leftOfRightNum), rigtOfRightOp);
+    	        if (leftOfRightOp instanceof Num) {
+    	            return createProduct( Num.product((Num) leftOp, (Num) leftOfRightOp) , rigtOfRightOp);
     	        }
     	        
     	        else return new MultiplyExpression(leftOp, rightOp);
@@ -46,7 +43,7 @@ public class MultiplyExpression extends BinaryOp implements Expression{
     	else if (rightOp instanceof MultiplyExpression) {
     	     final Expression leftOfRightOp = ((MultiplyExpression) rightOp).getLeft();
              final Expression rigtOfRightOp = ((MultiplyExpression) rightOp).getRight();
-             if (leftOfRightOp instanceof Number) {
+             if (leftOfRightOp instanceof Num) {
                  return createProduct(leftOfRightOp, createProduct(leftOp, rigtOfRightOp));
              }
              

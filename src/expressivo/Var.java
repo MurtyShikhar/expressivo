@@ -44,14 +44,14 @@ public class Var implements Expression{
 
     /* du/dx = 1 if u == x else 0 */
     public Expression differentiate(Var x) {
-        if (this.equals(x)) return new Number(1);
-        else return new Number(0);
+        if (this.equals(x)) return Num.one();
+        else return Num.zero();
     }
     
     public Expression simplify(Map<String, Double> env) {
       if (env.containsKey(var)) {
-          int val = env.get(var).intValue();
-          return new Number(val);
+          double val = env.get(var);
+          return new Num(val);
       }
       
       else return this;

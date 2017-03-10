@@ -29,9 +29,9 @@ public class ExpressionTest {
     }
 
     @Test 
-    public void checkEqualityNumber() {
-        final Expression number = new Number(9);
-        assertEquals(number , new Number(9));
+    public void checkEqualityNum() {
+        final Expression Num = new Num(9);
+        assertEquals(Num , new Num(9));
     }
 
     @Test
@@ -55,15 +55,15 @@ public class ExpressionTest {
     @Test
     public void multisumTest() {
         final BinaryOp expression = (BinaryOp) Expression.parse("x+y+z");
-        assertEquals(expression.getLeft(), new SumExpression(new Var("x"), new Var("y")));
-        assertEquals(expression.getRight(), new Var("z"));
+        assertEquals(expression.getRight(), new SumExpression(new Var("y"), new Var("z")));
+        assertEquals(expression.getLeft(), new Var("x"));
     }
 
     @Test
     public void multiproductTest() {
         final BinaryOp expression = (BinaryOp) Expression.parse("x*y*z");
-        assertEquals(expression.getRight(),new Var("z"));
-        assertEquals(expression.getLeft(),new MultiplyExpression(new Var("x"), new Var("y")));
+        assertEquals(expression.getLeft(),new Var("x"));
+        assertEquals(expression.getRight(),new MultiplyExpression(new Var("y"), new Var("z")));
     }
 
 
@@ -78,7 +78,7 @@ public class ExpressionTest {
     @Test
     public void sumProductTest2() {
         final Expression expression = Expression.parse("(2*x    )+    (    y*x    )");
-        final Expression left = new MultiplyExpression(new Number(2), new Var("x"));
+        final Expression left = new MultiplyExpression(new Num(2), new Var("x"));
         final Expression right = new MultiplyExpression(new Var("y"), new Var("x"));
         assertEquals(expression , new SumExpression(left, right));
     }
@@ -94,10 +94,10 @@ public class ExpressionTest {
     @Test
     public void complexParseTest(){
         final Expression expression = Expression.parse("4 + 3 * x + 2 * x * x + 1 * x * x * (((x)))");
-        final Expression subProd1 = new MultiplyExpression(new Number(3), new Var("x"));
-        final Expression subProd2 = new MultiplyExpression(new MultiplyExpression(new Number(2), new Var("x")), new Var("x"));
-        final Expression subProd3 = new MultiplyExpression(new MultiplyExpression(new Var("x"), new Var("x")), new Var("x"));
-        final Expression sumexpr = new SumExpression(new SumExpression(new SumExpression(new Number(4), subProd1), subProd2), subProd3);
+        final Expression subProd1 = new MultiplyExpression(new Num(3), new Var("x"));
+        final Expression subProd2 = new MultiplyExpression(new Num(2), new MultiplyExpression(new Var("x"), new Var("x")));
+        final Expression subProd3 = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
+        final Expression sumexpr = new SumExpression(new Num(4), new SumExpression(subProd1, new SumExpression(subProd2, subProd3)));
         assertEquals(sumexpr, expression);
     }
     
@@ -105,25 +105,24 @@ public class ExpressionTest {
     /* Simple tests for checking derivatives */
     
     @Test
-    public void NumberDerivativeCheck() {
-        final Expression exp = new Number(2);
-        assertEquals(new Number(0), exp.differentiate(new Var("x")));
+    public void NumDerivativeCheck() {
+        final Expression exp = new Num(2);
+        assertEquals(new Num(0), exp.differentiate(new Var("x")));
     }
     
     @Test
     public void VariableDerivativeCheck() {
         final Expression exp = new Var("x");
-        assertEquals(new Number(1), exp.differentiate(new Var("x")));
-        assertEquals(new Number(0), exp.differentiate(new Var("y")));
+        assertEquals(new Num(1), exp.differentiate(new Var("x")));
+        assertEquals(new Num(0), exp.differentiate(new Var("y")));
 
     }
     
     @Test
     public void ProductDerivativeCheck() {
         final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
-        final Expression left = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Number(2), new Var("x")) );
-        final Expression right = new MultiplyExpression(new Var("x"), new Var("x"));
-        assertEquals(new SumExpression(left, right), exp.differentiate(new Var("x")));
+        final Expression coeff = new MultiplyExpression(new Var("x"), new Var("x"));
+        assertEquals(new MultiplyExpression(new Num(3), coeff), exp.differentiate(new Var("x")));
     }
     
     @Test
@@ -144,14 +143,14 @@ public class ExpressionTest {
     @Test
     public void ProductDerivativeCheck4() {
         final Expression exp = new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")));
-        assertEquals(exp.differentiate(new Var("y")), new Number(0));
+        assertEquals(exp.differentiate(new Var("y")), new Num(0));
     }
     
     
     @Test
     public void SumDerivativeCheck() {
-        final Expression exp = new SumExpression(new Var("x"), new Number(1));
-        assertEquals(exp.differentiate(new Var("x")), new Number(1));
+        final Expression exp = new SumExpression(new Var("x"), new Num(1));
+        assertEquals(exp.differentiate(new Var("x")), new Num(1));
     }
     
     
@@ -159,7 +158,7 @@ public class ExpressionTest {
     public void ProductSumDerivativeCheck1() {
         final Expression exp = new MultiplyExpression(new SumExpression(new Var("x"), new Var("y")), new SumExpression(new Var("x"), new Var("y")));
         final Expression leftOp = new SumExpression(new Var("x"), new Var("y"));
-        assertEquals(exp.differentiate(new Var("x")), new MultiplyExpression(new Number(2), leftOp));
+        assertEquals(exp.differentiate(new Var("x")), new MultiplyExpression(new Num(2), leftOp));
     }
     
     /* Simple tests for checking Simplify() */
@@ -179,7 +178,7 @@ public class ExpressionTest {
         Map<String, Double> env = new HashMap<>();
         env.put("x", 4.0); 
         env.put("y", 3.0);
-        assertEquals(exp.simplify(env), new Number(13));
+        assertEquals(exp.simplify(env), new Num(13));
     }
     
     @Test
@@ -188,20 +187,20 @@ public class ExpressionTest {
         Map<String, Double> env = new HashMap<>();
         env.put("y", 2.0); 
         env.put("z", 5.0);
-        assertEquals(exp.simplify(env), new SumExpression(new Var("x"), new Number(10)));
+        assertEquals(exp.simplify(env), new SumExpression(new Var("x"), new Num(10)));
     }
     
     @Test
     public void Simplify3() {
-        final Expression exp = new SumExpression(new Number(3), new Number(4));
-        assertEquals(exp.simplify(new HashMap<String, Double>()), new Number(7));
+        final Expression exp = new SumExpression(new Num(3), new Num(4));
+        assertEquals(exp.simplify(new HashMap<String, Double>()), new Num(7));
     }
     
     
     @Test
     public void Simplify4() {
-        final Expression exp = new MultiplyExpression(new Number(3), new Number(4));
-        assertEquals(exp.simplify(new HashMap<String,Double>()), new Number(12));
+        final Expression exp = new MultiplyExpression(new Num(3), new Num(4));
+        assertEquals(exp.simplify(new HashMap<String,Double>()), new Num(12));
     }
     
     @Test
@@ -211,14 +210,28 @@ public class ExpressionTest {
         env.put("x", 4.0); 
         env.put("y", 3.0);
         env.put("z", 2.0);
-        assertEquals(exp.simplify(env), new Number(24));
+        assertEquals(exp.simplify(env), new Num(24));
+    }
+    
+    @Test
+    public void Simplify() {
+        final Expression exp = new SumExpression(new MultiplyExpression(new Num(4), new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")))), new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x"))));
+        assertEquals(exp.simplify(new HashMap<>()), new MultiplyExpression(new Num(5), new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("x")))));
+    }
+    
+    @Test
+    public void Simplify2() {
+        final Expression exp = new SumExpression(new MultiplyExpression(new Var("x"), new Var("x")), new MultiplyExpression(new Var("y"), new MultiplyExpression(new Var("x"), new Var("x"))));
+        Map<String, Double> env = new HashMap<>();
+        env.put("y", 4.0);
+        assertEquals(exp.simplify(env), new MultiplyExpression(new Num(5), new MultiplyExpression(new Var("x"), new Var("x"))));
     }
 
     @Test
     public void ComplexSimplify1() {
-        final Expression exp = new SumExpression(new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("y"))), new MultiplyExpression(new Var("y"), new SumExpression(new Number(1), new Var("x"))));
+        final Expression exp = new SumExpression(new MultiplyExpression(new Var("x"), new MultiplyExpression(new Var("x"), new Var("y"))), new MultiplyExpression(new Var("y"), new SumExpression(new Num(1), new Var("x"))));
         Map<String, Double> env = new HashMap<>();
         env.put("x", 2.0);
-        assertEquals(exp.simplify(env), new MultiplyExpression(new Number(7), new Var("y")));
+        assertEquals(exp.simplify(env), new MultiplyExpression(new Num(7), new Var("y")));
     }
 }
